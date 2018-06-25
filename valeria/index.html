@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/0.6.0/pure-min.css">
+    <!--[if lte IE 8]>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/0.6.0/grids-responsive-old-ie-min.css">
+    <![endif]-->
+    <!--[if gt IE 8]><!-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/0.6.0/grids-responsive-min.css">
+    <!--<![endif]-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.0.0/magnific-popup.min.css">
+    <link rel="stylesheet" href="css/custom.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
+    <meta description="Поиск по журналам боевых действий и оперативным документам сайта pamyat-naroda.ru с возможностью фильтрации по архивным полям.">
+    <script src="https://unpkg.com/ag-grid/dist/ag-grid.min.noStyle.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/ag-grid/dist/styles/ag-grid.css">
+    <link rel="stylesheet" href="https://unpkg.com/ag-grid/dist/styles/ag-theme-balham.css">
+
+    <title>Поиск документов</title>
+</head>
+
+<body class="pure-grids">
+    <div class="pure-g" id="form-container">
+        <div class="border pure-u-1 pure-u-lg-3-4">
+            <div class="pure-u-1 pure-menu pure-menu-horizontal">
+                <ul class="pure-menu-list">
+                    <li class="pure-menu-item">
+                        <button type="reset" id="reset_dou" class="pure-button" title="Очистить форму">Reset</button>
+                    </li>
+                    <li class="pure-menu-item">
+                        <button type="button" id="save-file" class="pure-button icon" title="Сохранить данные в файл">
+                            <i class="icon-download"></i>
+                        </button>
+                    </li>
+                    <li class="pure-menu-item">
+                        <label for="advanced_settings">
+                            <input id="advanced_settings" type="checkbox" toggle>
+                            <span class="pure-button icon" title="Дополнительно"><i class="icon-cog"></i></span>
+                        </label>
+                    </li>
+                    <li class="pure-menu-item">
+                        <button type="button" id="show-info" class="pure-button icon" title="Помощь"><i class="icon-info"></i></button>
+                    </li>
+                     <div class="pure-u-1-2 pure-u-sm-1-6">
+                        <input class="pure-input-1" type="number" id="total" placeholder="Количество записей" value='' title="Количество результатов" min=0 max=10000000> Количество записей в базе
+                    </div>
+                </ul>
+                <!--
+                <input type="checkbox"> Поиск по фразе
+                <button type="reset" id="reset_dou" class="pure-button" title="Поиск по заданным полям">Поиск по заданным полям</button>
+                -->
+            </div>
+            <form id="dou" class="pure-form" autocomplete="on">
+                <div class="pure-g">
+                    <div class="pure-u-1-2 pure-u-sm-1-3">
+                        <input class="pure-input-1" type="text" id="doc_name" placeholder="Название документа">
+                    </div>
+                    <div class="pure-u-1-2 pure-u-sm-1-3">
+                        <input class="pure-input-1" type="text" id="division" placeholder="Название части" title="Название части">
+                    </div>
+                     <div class="pure-u-1-2 pure-u-sm-1-3">
+                        <input class="pure-input-1" type="text" id="author" placeholder="Автор документа" title="Автор документа">
+                    </div>
+                </div>
+                <div class="pure-g">
+                    <div class="pure-u-1-2 pure-u-sm-1-3">
+                        <input class="pure-input-1" type="text" id="fond" placeholder="Фонд" title="Фонд">
+                    </div>
+                    <div class="pure-u-1-2 pure-u-sm-1-3">
+                        <input class="pure-input-1" type="text" id="opis" placeholder="Опись" title="Опись">
+                    </div>
+                    <div class="pure-u-1-2 pure-u-sm-1-3">
+                        <input class="pure-input-1" type="text" id="delo" placeholder="Дело" title="Дело">
+                    </div>
+                </div>
+                <div class="pure-g">
+                    <div class="pure-u-1-2 pure-u-sm-1-3">
+                        <input class="pure-input-1" type="text" id="date_beg" placeholder="Начальная дата" title="Начальная дата">
+                    </div>
+                    <div class="pure-u-1-2 pure-u-sm-1-3">
+                        <input class="pure-input-1" type="text" id="date_end" placeholder="Конечная дата" title="Конечная дата">
+                    </div>
+                    
+                    <div class="pure-u-1-2 pure-u-sm-1-3">
+                        <input class="pure-input-1" type="text" id="doc_id" placeholder="ID документа">
+                    </div>
+                    
+                    <div class="pure-u-1-2 pure-u-sm-1-6">
+                        <input class="pure-input-1" type="number" id="size" placeholder="Количество результатов" value='50' title="Количество результатов" min=0 max=10000>
+                    </div>
+                    <div class="pure-u-1-2 pure-u-sm-1-6">
+                        <select class="pure-input-1" name="sort" id="sort">
+                            <option disabled>Сортировка</option>
+                            <option value="document_date_b" selected="selected">По дате</option>
+							<option value="fond">По № фонда</option>
+                            <option value="opis">По № описи</option>
+                            <option value="delo">По № дела</option>
+                            <option value="authors">По автору</option>
+                            <option value="match">По релевантности</option>
+                            <option value="id">По id</option>
+                        </select>
+                    </div>
+                    <div class="pure-u-1-2 pure-u-sm-1-3">
+                        <div class="multiselect pure-input-1">
+                            <div class="selectBox">
+                                <select id="main">
+                                    <option>Тип документа</option>
+                                </select>
+                                <div class="overSelect"></div>
+                            </div>
+                            <div class="checkboxes_container">
+                                <div id="checkboxes">
+                                    <label>
+                                        <input type="checkbox" id="reset_checkboxes" autocomplete="off" value="Любой" checked><b>Любой</b>
+                                    </label>
+                                    <div class='options'>
+                                        <label>
+                                            <input type="checkbox" autocomplete="off" value="Боевые донесения, оперсводки">Боевые донесения, оперсводки</label>
+                                        <label>
+                                            <input type="checkbox" autocomplete="off" value="Боевые приказы и распоряжения">Боевые приказы и распоряжения</label>
+                                        <label>
+                                            <input type="checkbox" autocomplete="off" value="Директивы и указания">Директивы и указания</label>
+                                        <label>
+                                            <input type="checkbox" autocomplete="off" value="Доклады">Доклады</label>
+                                        <label>
+                                            <input type="checkbox" autocomplete="off" value="Карты">Карты</label>
+                                        <label>
+                                            <input type="checkbox" autocomplete="off" value="Отчеты о боевых действиях">Отчеты о боевых действиях</label>
+                                        <label>
+                                            <input type="checkbox" autocomplete="off" value="Переговоры">Переговоры</label>
+                                        <label>
+                                            <input type="checkbox" autocomplete="off" value="Планы операций">Планы операций</label>
+                                        <label>
+                                            <input type="checkbox" autocomplete="off" value="Планы">Планы</label>
+                                        <label>
+                                            <input type="checkbox" autocomplete="off" value="Постановления">Постановления</label>
+                                        <label>
+                                            <input type="checkbox" autocomplete="off" value="Приказы">Приказы</label>
+                                        <label>
+                                            <input type="checkbox" autocomplete="off" value="Прочие документы">Прочие документы</label>
+                                        <label>
+                                            <input type="checkbox" autocomplete="off" value="Разведывательные бюллетени и донесения">Разведывательные бюллетени и донесения</label>
+                                        <label>
+                                            <input type="checkbox" autocomplete="off" value="Рапорты">Рапорты</label>
+                                        <label>
+                                            <input type="checkbox" autocomplete="off" value="Сведения">Сведения</label>
+                                        <label>
+                                            <input type="checkbox" autocomplete="off" value="Справки">Справки</label>
+                                        <label>
+                                            <input type="checkbox" autocomplete="off" value="Схемы">Схемы</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="pure-u-1-2 pure-u-sm-1-3">
+                        <input class="pure-input-1 pure-button" type="submit" id="get" value="Поиск">
+                    </div>
+                </div>
+            </form>
+        </div>
+        <form id="advanced" class="pure-form pure-form-aligned">
+            <div class="pure-u-1">
+                <input class="pure-input-1" type="text" id="apiURL" name="apiURL" placeholder="CUSTOM API URL">
+            </div>
+            <div class="pure-u-1">
+                <textarea id="params" cols="130" rows="2" spellcheck='false'>
+                </textarea>
+            </div>
+            <div class="pure-u-1">
+                <textarea name="res" id="res" cols="130" rows="2" spellcheck='false' readonly></textarea>
+            </div>
+        </form>
+    </div>
+
+    <div class="results">
+        <div class="message"></div>
+        <div class="pagination">
+            <a href="javascript:void(0)" class="prev">  &#8592; Назад</a>
+            <a href="javascript:void(0)" class="next">Вперед &#8594; </a>
+        </div>
+
+        <div id="myGrid" style="height: 600px;width:100%;" class="ag-theme-balham"></div>
+
+        <table id="jbd_table" border='1' cellspacing="0" cellpadding="0">
+            <thead>
+                <tr>
+                    <th>id</th>
+                    <th class="path"></th>
+                    <th>fond</th>
+                    <th>opis</th>
+                    <th>delo</th>
+                    <th>list</th>
+                    <th>name</th>
+                    <th>authors</th>
+                    <th>date_beg</th>
+                    <th>date_end</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+        <table id="dou_table" border='1' cellspacing="0" cellpadding="0">
+            <thead>
+                <tr>
+                    <th>id</th>
+                    <th class="path"></th>
+                    <th>fond</th>
+                    <th>opis</th>
+                    <th>delo</th>
+                    <th>list</th>
+                    <th>name</th>
+                    <th>authors</th>
+                    <th>date_beg</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+        <!--<h1 style="color:red">Поиск может работать с перебоями, т.к. администраторы pamyatnaroda.mil.ru блокируют доступ к API поиска.</h1>-->
+
+        <div class="pagination">
+            <a href="javascript:void(0)" class="prev">  &#8592; Назад</a>
+            <a href="javascript:void(0)" class="next">Вперед &#8594; </a>
+        </div>
+    </div>
+
+    <div id="info" class="white-popup mfp-hide">
+        <p>При поиске по полям "Название документа" и "Автор документа" используйте подстановочные символы ? и *, например "погод?", "партизан*", "плен*". Для исключения слова или словосочетания перед ним надо поставить знак - , например "Говоров -(подполковник Говоров)". Для поиска точной фразы, заключите её в кавычки: "5 а".
+        </p>
+        <hr>
+   
+      
+    </div>
+
+    <noscript>
+        <div class="white-popup">
+            <h3>Включите javascript!</h3></div>
+    </noscript>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <!--[if lte IE 9]>
+    <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/jquery-ajaxtransport-xdomainrequest/1.0.3/jquery.xdomainrequest.min.js'></script>
+    <![endif]-->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+    <link href="https://code.jquery.com/ui/1.11.4/themes/cupertino/jquery-ui.min.css" rel="stylesheet">
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.23.3/css/theme.blue.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.23.3/js/jquery.tablesorter.combined.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.0.0/jquery.magnific-popup.min.js"></script>
+    <script src="js/ag-grid.min.js"></script>
+    <script src="js/addclear.js"></script>
+    <script src="js/custom.js"></script>
+
+    <!-- Start of StatCounter Code for Default Guide -->
+    <script type="text/javascript">
+    var sc_project = 10609041;
+    var sc_invisible = 1;
+    var sc_security = "dee819b8";
+    var scJsHost = (("https:" == document.location.protocol) ?
+        "https://secure." : "http://www.");
+    document.write("<sc" + "ript type='text/javascript' src='" +
+        scJsHost +
+        "statcounter.com/counter/counter.js'></" + "script>");
+    </script>
+    <noscript>
+        <div class="statcounter">
+            <img class="statcounter" src="https://c.statcounter.com/10609041/0/dee819b8/1/" height="0" width="0">
+        </div>
+    </noscript>
+    <!-- End of StatCounter Code for Default Guide -->
+    
+    <!-- Yandex.Metrika counter -->
+    <script type="text/javascript">
+    (function (d, w, c) {
+        (w[c] = w[c] || []).push(function() {
+            try {
+                w.yaCounter34203165 = new Ya.Metrika({id:34203165,
+                        webvisor:true,
+                        clickmap:true,
+                        trackLinks:true,
+                        accurateTrackBounce:true,
+                        ut:"noindex"});
+            } catch(e) { }
+        });
+
+        var n = d.getElementsByTagName("script")[0],
+            s = d.createElement("script"),
+            f = function () { n.parentNode.insertBefore(s, n); };
+        s.type = "text/javascript";
+        s.async = true;
+        s.src = (d.location.protocol == "https:" ? "https:" : "http:") + "//mc.yandex.ru/metrika/watch.js";
+
+        if (w.opera == "[object Opera]") {
+            d.addEventListener("DOMContentLoaded", f, false);
+        } else { f(); }
+    })(document, window, "yandex_metrika_callbacks");
+    </script>
+    <noscript><div><img src="//mc.yandex.ru/watch/34203165?ut=noindex" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+    <!-- /Yandex.Metrika counter -->
+</body>
+
+</html>
